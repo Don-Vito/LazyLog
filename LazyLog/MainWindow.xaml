@@ -1,0 +1,60 @@
+﻿<Window x:Class="LazyLog.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:avalonDock="http://avalondock.codeplex.com"
+        xmlns:local="clr-namespace:LazyLog"
+        xmlns:model="clr-namespace:LazyLog.ViewModel"
+        Title="{Binding Title}" Height="350" Width="525">
+    <Grid>
+        <Grid.Resources>           
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>            
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="_File">                
+                <MenuItem Header="Open" Command="{Binding OpenFileCommand}"/>
+                <MenuItem Header="Close" Command="{Binding CloseFileCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_New Window" Command="{Binding OpenLogWindowCommand}" />
+        </Menu>
+        <avalonDock:DockingManager 
+            x:Name="dockingManager" 
+            DocumentsSource="{Binding Logs}"
+            Grid.Row="1">
+
+            <avalonDock:DockingManager.DocumentHeaderTemplate>                
+                <DataTemplate DataType="{x:Type model:LogViewModel}">
+                    <TextBlock Text="{Binding Content.LogViewTitle}" />
+                </DataTemplate>
+            </avalonDock:DockingManager.DocumentHeaderTemplate>
+            <avalonDock:DockingManager.DocumentTitleTemplate>
+                <DataTemplate DataType="{x:Type model:LogViewModel}">
+                    <TextBlock Text="{Binding Content.LogViewTitle}" />
+                </DataTemplate>
+            </avalonDock:DockingManager.DocumentTitleTemplate>
+
+            <avalonDock:DockingManager.LayoutItemTemplate>
+                <DataTemplate DataType="{x:Type model:LogViewModel}" >
+                    <ListBox ItemsSource="{Binding LogRecords}" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Message}" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DataTemplate>
+            </avalonDock:DockingManager.LayoutItemTemplate>
+            
+            <avalonDock:LayoutRoot>
+                <avalonDock:LayoutPanel Orientation="Vertical">
+                    <avalonDock:LayoutDocumentPane/>
+                    <avalonDock:LayoutAnchorablePane Name="LogsPane" />                                        
+                </avalonDock:LayoutPanel>
+            </avalonDock:LayoutRoot>
+        </avalonDock:DockingManager>
+    </Grid>
+</Window>
