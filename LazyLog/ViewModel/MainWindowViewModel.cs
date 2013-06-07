@@ -15,10 +15,15 @@ namespace LazyLog.ViewModel
 {
     class MainWindowViewModel : ViewModelBase
     {
+        private const int MAX_MRU_SIZE = 10;
+
         private SafeObservableCollection<LogViewModel> _logs = new SafeObservableCollection<LogViewModel>();
         private SafeObservableCollection<LogRecord> _logRecords = new SafeObservableCollection<LogRecord>();
+        private SafeObservableCollection<string> _recentFiles = new SafeObservableCollection<string>();
+
         private ILogProvdier _logProvider;
         private ILogParser _logParser;
+        private MruManager _mruManager;
 
         #region Commands Properties
         
@@ -30,12 +35,16 @@ namespace LazyLog.ViewModel
 
         private RelayCommand _openLogWindowCommand = null;
         public ICommand OpenLogWindowCommand { get { return _openLogWindowCommand; } }
+
+        private RelayCommand _openRecentFileCommand = null;
+        public ICommand OpenRecentFileCommand { get { return _openRecentFileCommand; } }
         
         #endregion // Commands Properties 
 
 
         #region Title
-        private string _title = null;
+
+        private string _title = null;       
         public string Title
         {
             get { return _title; }
@@ -53,6 +62,7 @@ namespace LazyLog.ViewModel
         
         
         #region Logs Collection
+
         public ObservableCollection<LogViewModel> Logs
         {
             get
@@ -60,14 +70,31 @@ namespace LazyLog.ViewModel
                 return _logs;
             }
         }
+
         #endregion
+
+
+        #region MRU
+        
+        public ObservableCollection<string> RecentFiles
+        {
+            get
+            {
+                return _recentFiles;
+            }
+        }
+        
+        #endregion
+
 
         public MainWindowViewModel()
         {
             _openFileCommand = new RelayCommand((p) => OnOpenFile(p));
             _closeFileCommand = new RelayCommand((p) => OnCloseFile(p));
             _openLogWindowCommand = new RelayCommand((p) => OnOpenLogWindow(p), (p) => CanOpenLogWindow(p));
+            _openRecentFileCommand = new RelayCommand((p) => OnOpenRecentFile(p), (p) => CanOpenRecentFile(p));
             _logParser = new CsvLogParser();
+            _mruManager = new MruManager(_recentFiles, MAX_MRU_SIZE);
 
             Title = "LazyLog";            
         }
@@ -100,6 +127,17 @@ namespace LazyLog.ViewModel
             return _logProvider != null;    
         }
 
+
+        private void OnOpenRecentFile(object parameter)
+        {
+            OpenFile(parameter as String); 
+        }
+
+        private bool CanOpenRecentFile(object parameter)
+        {
+            return _recentFiles.Count > 0;
+        }
+
         #endregion
 
 
@@ -110,6 +148,8 @@ namespace LazyLog.ViewModel
                 _logProvider = new FileLogProvider(filePath);
                 _logProvider.OnNewData += HandleNewData;
                 _logProvider.Start();
+
+                _mruManager.Add(filePath);
                 
                 Title = "LazyLog - " + _logProvider.Description;
                 OpenLogWindow();                
@@ -152,6 +192,6 @@ namespace LazyLog.ViewModel
             var logViewModel = new LogViewModel(_logRecords);
             _logs.Add(logViewModel);
             RaisePropertyChanged("Logs");
-        }
+        }        
     }
 }

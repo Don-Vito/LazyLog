@@ -5,6 +5,11 @@
         xmlns:local="clr-namespace:LazyLog"
         xmlns:model="clr-namespace:LazyLog.ViewModel"
         Title="{Binding Title}" Height="350" Width="525">
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding Path=OpenFileCommand}" Key="O" Modifiers="Control"></KeyBinding>
+        <KeyBinding Command="{Binding Path=CloseFileCommand}" Key="C" Modifiers="Control"></KeyBinding>
+        <KeyBinding Command="{Binding Path=OpenLogWindowCommand}" Key="N" Modifiers="Control"></KeyBinding>        
+    </Window.InputBindings>
     <Grid>
         <Grid.Resources>           
         </Grid.Resources>
@@ -12,12 +17,21 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>            
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0">
-            <MenuItem Header="_File">                
-                <MenuItem Header="Open" Command="{Binding OpenFileCommand}"/>
-                <MenuItem Header="Close" Command="{Binding CloseFileCommand}"/>
+        <Menu Name="Menu" Grid.Row="0">           
+            <MenuItem Header="_File">
+                <MenuItem Header="Open" Command="{Binding OpenFileCommand}" InputGestureText="Ctrl+O" />
+                <MenuItem Header="Close" Command="{Binding CloseFileCommand}" InputGestureText="Ctrl+C" />
+                <Separator />
+                <MenuItem Header="Recent Files" Command="{Binding OpenRecentFileCommand}" ItemsSource="{Binding RecentFiles}">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ItemsPresenter}, Path=DataContext.OpenRecentFileCommand}" />
+                            <Setter Property="CommandParameter" Value="{Binding}" />
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
             </MenuItem>
-            <MenuItem Header="_New Window" Command="{Binding OpenLogWindowCommand}" />
+            <MenuItem Header="_New Window" Command="{Binding OpenLogWindowCommand}" InputGestureText="Ctrl+N" />
         </Menu>
         <avalonDock:DockingManager 
             x:Name="dockingManager" 
