@@ -18,7 +18,7 @@ namespace LazyLog.LogProviders
         {
             string[] values = line.Split(new[] { ',' });
 
-            return new LogRecord(
+            return LogRecord.Create(
                 DateTime.ParseExact(values[0], "yyyy-MM-dd HH:mm:ss:fff", System.Globalization.CultureInfo.InvariantCulture),
                 (Severity)Enum.Parse(typeof(Severity), values[1]),
                 values[2],  //module name
