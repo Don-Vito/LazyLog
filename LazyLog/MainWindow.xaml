@@ -13,7 +13,10 @@
         <KeyBinding Command="{Binding Path=OpenLogWindowCommand}" Key="N" Modifiers="Control"></KeyBinding>        
     </Window.InputBindings>
     <Grid>
-        <Grid.Resources>           
+        <Grid.Resources>
+            <Style TargetType="{x:Type xcdg:HierarchicalGroupByControl}">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Style>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -38,7 +41,7 @@
         <xcad:DockingManager 
             x:Name="dockingManager" 
             DocumentsSource="{Binding Logs}"
-            Grid.Row="1">
+            Grid.Row="1">            
 
             <xcad:DockingManager.DocumentHeaderTemplate>                
                 <DataTemplate DataType="{x:Type model:LogViewModel}">
@@ -56,7 +59,7 @@
                     <xcdg:DataGridControl x:Name="_dataGrid" 
                             MaxHeight="600"
                             ItemsSource="{Binding LogRecords }"
-                            >                       
+                            >                        
                     </xcdg:DataGridControl>                  
                 </DataTemplate>
             </xcad:DockingManager.LayoutItemTemplate>
