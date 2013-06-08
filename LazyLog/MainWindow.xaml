@@ -13,11 +13,6 @@
         <KeyBinding Command="{Binding Path=OpenLogWindowCommand}" Key="N" Modifiers="Control"></KeyBinding>        
     </Window.InputBindings>
     <Grid>
-        <Grid.Resources>
-            <Style TargetType="{x:Type xcdg:HierarchicalGroupByControl}">
-                <Setter Property="Visibility" Value="Collapsed"/>
-            </Style>
-        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>            
@@ -55,12 +50,43 @@
             </xcad:DockingManager.DocumentTitleTemplate>
 
             <xcad:DockingManager.LayoutItemTemplate>                
-                <DataTemplate DataType="{x:Type model:LogViewModel}" >                   
-                    <xcdg:DataGridControl x:Name="_dataGrid" 
-                            MaxHeight="600"
-                            ItemsSource="{Binding LogRecords }"
-                            >                        
-                    </xcdg:DataGridControl>                  
+                <DataTemplate DataType="{x:Type model:LogViewModel}" >    
+                    <Grid>
+                        <Grid.Resources>
+                            <Style TargetType="{x:Type xcdg:HierarchicalGroupByControl}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </Style>
+                            <Style TargetType="{x:Type xcdg:RowSelectorPane}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </Style>
+                            <!--ContextMenu x:Key="CellContextMenu" StaysOpen="True" 
+                                         ItemsSource="{Binding Source={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}, Path=FilterOptions}" />
+                            <Style TargetType="{x:Type xcdg:DataCell}">
+                                <Setter Property="ContextMenu" Value="{Binding Source={StaticResource CellContextMenu} }" />                                            
+                            </Style-->
+                            <!--Style TargetType="{x:Type xcdg:DataCell}">
+                                <EventSetter Event="ContextMenuOpening" Handler="OnDataGridContextMenuOpening" />
+                             </Style-->                           
+                        </Grid.Resources>
+                        <xcdg:DataGridControl x:Name="_dataGrid" MaxHeight="600" ItemsSource="{Binding FilteredLogRecords}"                                               
+                                              SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                              NavigationBehavior="RowOnly"                                        
+                                              ReadOnly="True"                                             
+                                              >
+                            <xcdg:DataGridControl.ContextMenu>
+                                <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}" >                                  
+                                    <MenuItem Header="Apply Filter" Command="{Binding DataContext.FilterCommand}" ItemsSource="{Binding DataContext.FilterOptions}">
+                                        <MenuItem.ItemContainerStyle>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}, Path=DataContext.DataContext.FilterCommand}" />
+                                                <Setter Property="CommandParameter" Value="{Binding}" />
+                                            </Style>
+                                        </MenuItem.ItemContainerStyle>
+                                    </MenuItem>                                  
+                                </ContextMenu>
+                            </xcdg:DataGridControl.ContextMenu>
+                        </xcdg:DataGridControl>
+                    </Grid>                    
                 </DataTemplate>
             </xcad:DockingManager.LayoutItemTemplate>
             
