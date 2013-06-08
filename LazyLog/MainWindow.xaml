@@ -1,9 +1,11 @@
 ﻿<Window x:Class="LazyLog.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:avalonDock="http://avalondock.codeplex.com"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"        
         xmlns:local="clr-namespace:LazyLog"
         xmlns:model="clr-namespace:LazyLog.ViewModel"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         Title="{Binding Title}" Height="350" Width="525">
     <Window.InputBindings>
         <KeyBinding Command="{Binding Path=OpenFileCommand}" Key="O" Modifiers="Control"></KeyBinding>
@@ -33,23 +35,23 @@
             </MenuItem>
             <MenuItem Header="_New Window" Command="{Binding OpenLogWindowCommand}" InputGestureText="Ctrl+N" />
         </Menu>
-        <avalonDock:DockingManager 
+        <xcad:DockingManager 
             x:Name="dockingManager" 
             DocumentsSource="{Binding Logs}"
             Grid.Row="1">
 
-            <avalonDock:DockingManager.DocumentHeaderTemplate>                
+            <xcad:DockingManager.DocumentHeaderTemplate>                
                 <DataTemplate DataType="{x:Type model:LogViewModel}">
                     <TextBlock Text="{Binding Content.LogViewTitle}" />
                 </DataTemplate>
-            </avalonDock:DockingManager.DocumentHeaderTemplate>
-            <avalonDock:DockingManager.DocumentTitleTemplate>
+            </xcad:DockingManager.DocumentHeaderTemplate>
+            <xcad:DockingManager.DocumentTitleTemplate>
                 <DataTemplate DataType="{x:Type model:LogViewModel}">
                     <TextBlock Text="{Binding Content.LogViewTitle}" />
                 </DataTemplate>
-            </avalonDock:DockingManager.DocumentTitleTemplate>
+            </xcad:DockingManager.DocumentTitleTemplate>
 
-            <avalonDock:DockingManager.LayoutItemTemplate>
+            <xcad:DockingManager.LayoutItemTemplate>
                 <DataTemplate DataType="{x:Type model:LogViewModel}" >
                     <ListBox ItemsSource="{Binding LogRecords}" >
                         <ListBox.ItemTemplate>
@@ -61,14 +63,14 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </DataTemplate>
-            </avalonDock:DockingManager.LayoutItemTemplate>
+            </xcad:DockingManager.LayoutItemTemplate>
             
-            <avalonDock:LayoutRoot>
-                <avalonDock:LayoutPanel Orientation="Vertical">
-                    <avalonDock:LayoutDocumentPane/>
-                    <avalonDock:LayoutAnchorablePane Name="LogsPane" />                                        
-                </avalonDock:LayoutPanel>
-            </avalonDock:LayoutRoot>
-        </avalonDock:DockingManager>
+            <xcad:LayoutRoot>
+                <xcad:LayoutPanel Orientation="Vertical">
+                    <xcad:LayoutDocumentPane/>
+                    <xcad:LayoutAnchorablePane Name="LogsPane" />                                        
+                </xcad:LayoutPanel>
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
     </Grid>
 </Window>
