@@ -29,6 +29,9 @@ namespace LazyLog.ViewModel
         private RelayCommand _filterInTabCommand = null;
         public ICommand FilterInTabCommand { get { return _filterInTabCommand; } }
 
+        private RelayCommand _clearFiltersCommand = null;
+        public ICommand ClearFiltersCommand { get { return _clearFiltersCommand; } }
+
         #region Title
         
         private IList<FilterOption> _filterOptions;
@@ -80,6 +83,7 @@ namespace LazyLog.ViewModel
             FilterOptions = filter;
             _filterCommand = new RelayCommand((p) => { RunFilter(p); }, (p) => CanFilter(p));
             _filterInTabCommand = new RelayCommand((p) => { RunFilterInTab(p); }, (p) => CanFilter(p));
+            _clearFiltersCommand = new RelayCommand((p) => { ClearFilters(p); }, (p) => CanClearFilters(p));
         }
 
         #region FilterMenu
@@ -97,6 +101,18 @@ namespace LazyLog.ViewModel
                 _filterOptions.Add(option);
                 FilterOptions = _filterOptions;
             }            
+        }
+
+        private bool CanClearFilters(object p)
+        {
+            return FilterOptions.Count > 0;
+        }
+
+        private void ClearFilters(object p)
+        {
+            FilterOption option = p as FilterOption;
+            _filterOptions.Remove(option);
+            FilterOptions = _filterOptions;
         }
 
         private void RunFilterInTab(object p)
@@ -140,7 +156,7 @@ namespace LazyLog.ViewModel
                     new FilterOption(String.Format("ModuleName is not {0}",  currentRecord.ModuleName), (record) => (record.ModuleName != currentRecord.ModuleName)),
                 };
             }
-        }     
+        }             
 
         #endregion     
     }

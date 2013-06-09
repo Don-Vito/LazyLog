@@ -92,6 +92,15 @@
                                             </Style>
                                         </MenuItem.ItemContainerStyle>
                                     </MenuItem>
+                                    <MenuItem Header="Clear Filters" Command="{Binding DataContext.ClearFiltersCommand}" ItemsSource="{Binding DataContext.FilterOptions}">
+                                        <MenuItem.ItemContainerStyle>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Header" Value="{Binding Description}" />
+                                                <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}, Path=DataContext.DataContext.ClearFiltersCommand}" />
+                                                <Setter Property="CommandParameter" Value="{Binding}" />
+                                            </Style>
+                                        </MenuItem.ItemContainerStyle>
+                                    </MenuItem>
                                 </ContextMenu>
                             </xcdg:DataGridControl.ContextMenu>
                             <xcdg:DataGridControl.View>
