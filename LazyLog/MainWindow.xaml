@@ -7,6 +7,7 @@
         xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         Title="{Binding Title}" Height="600" Width="800">
+        
     <Window.InputBindings>
         <KeyBinding Command="{Binding Path=OpenFileCommand}" Key="O" Modifiers="Control"></KeyBinding>
         <KeyBinding Command="{Binding Path=CloseFileCommand}" Key="C" Modifiers="Control"></KeyBinding>
@@ -75,7 +76,16 @@
                                                 <Setter Property="CommandParameter" Value="{Binding}" />
                                             </Style>
                                         </MenuItem.ItemContainerStyle>
-                                    </MenuItem>                                  
+                                    </MenuItem>
+                                    <MenuItem Header="Apply Filter in Tab" Command="{Binding DataContext.FilterInTabCommand}" ItemsSource="{Binding DataContext.MenuFilterOptions}">
+                                        <MenuItem.ItemContainerStyle>
+                                            <Style TargetType="MenuItem">
+                                                <Setter Property="Header" Value="{Binding Description}" />
+                                                <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}, Path=DataContext.DataContext.FilterInTabCommand}" />
+                                                <Setter Property="CommandParameter" Value="{Binding}" />
+                                            </Style>
+                                        </MenuItem.ItemContainerStyle>
+                                    </MenuItem>
                                 </ContextMenu>
                             </xcdg:DataGridControl.ContextMenu>
                             <xcdg:DataGridControl.View>

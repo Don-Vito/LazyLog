@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Xceed.Wpf.DataGrid;
 
 namespace LazyLog.ViewModel
 {
@@ -24,7 +25,7 @@ namespace LazyLog.ViewModel
         private ILogProvdier _logProvider;
         private ILogParser _logParser;
         private MruManager _mruManager;
-
+        private ICollectionViewCreator _iCollectionViewCreator;
         #region Commands Properties
         
         private RelayCommand _openFileCommand = null;
@@ -71,6 +72,14 @@ namespace LazyLog.ViewModel
             }
         }
 
+        public ObservableCollection<LogRecord> LogRecords
+        {
+            get
+            {
+                return _logRecords;
+            }
+        }
+
         #endregion
 
 
@@ -87,8 +96,9 @@ namespace LazyLog.ViewModel
         #endregion
 
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(ICollectionViewCreator iCollectionViewCreator)
         {
+            _iCollectionViewCreator = iCollectionViewCreator;
             _openFileCommand = new RelayCommand((p) => OnOpenFile(p));
             _closeFileCommand = new RelayCommand((p) => OnCloseFile(p));
             _openLogWindowCommand = new RelayCommand((p) => OnOpenLogWindow(p), (p) => CanOpenLogWindow(p));
@@ -119,7 +129,7 @@ namespace LazyLog.ViewModel
 
         private void OnOpenLogWindow(object parameter)
         {
-            OpenLogWindow();
+            OpenLogWindow(new List<FilterOption>());
         }
 
         private bool CanOpenLogWindow(object parameter)
@@ -130,6 +140,7 @@ namespace LazyLog.ViewModel
 
         private void OnOpenRecentFile(object parameter)
         {
+            CloseFile();
             OpenFile(parameter as String); 
         }
 
@@ -152,7 +163,7 @@ namespace LazyLog.ViewModel
                 _mruManager.Add(filePath);
                 
                 Title = "LazyLog - " + _logProvider.Description;
-                OpenLogWindow();                
+                OpenLogWindow(new List<FilterOption>());                
             }
         }
 
@@ -178,6 +189,7 @@ namespace LazyLog.ViewModel
 		        _logProvider.Stop();
                 _logProvider.OnNewData -= HandleNewData;
                 _logProvider = null;
+                _logRecords.Clear();
 	        }
         }
 
@@ -187,10 +199,11 @@ namespace LazyLog.ViewModel
             RaisePropertyChanged("Logs");
         }
 
-        private void OpenLogWindow()
-        {
-            var logViewModel = new LogViewModel(_logRecords);
-            _logs.Add(logViewModel);
+        private void OpenLogWindow(IList<FilterOption> filterOptions)
+        {            
+            var logViewModel = new LogViewModel(_iCollectionViewCreator.CreateView(_logRecords), filterOptions);
+            logViewModel.OnNewTabRequest += OpenLogWindow;
+            _logs.Add(logViewModel);            
             RaisePropertyChanged("Logs");
         }        
     }

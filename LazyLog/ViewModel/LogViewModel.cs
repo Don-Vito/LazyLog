@@ -14,13 +14,20 @@ using System.Windows.Input;
 
 namespace LazyLog.ViewModel
 {
+    public delegate void NewTabRequestHandler(IList<FilterOption> filterOptions);
+
     class LogViewModel : ViewModelBase
-    {           
+    {
+        
+        public event NewTabRequestHandler OnNewTabRequest;
         public ICollectionView FilteredLogRecords { get; private set;}
         public object SelectedItem { get; private set; }
 
         private RelayCommand _filterCommand = null;
         public ICommand FilterCommand { get { return _filterCommand; } }
+
+        private RelayCommand _filterInTabCommand = null;
+        public ICommand FilterInTabCommand { get { return _filterInTabCommand; } }
 
         #region Title
         
@@ -67,15 +74,12 @@ namespace LazyLog.ViewModel
         #endregion
 
 
-        public LogViewModel(ObservableCollection<LogRecord> logRecords) : this(logRecords, new List<FilterOption>())
-        {                       
-        }
-
-        public LogViewModel(ObservableCollection<LogRecord> logRecords, IList<FilterOption> filter)          
+        public LogViewModel(ICollectionView filteredRecords, IList<FilterOption> filter)          
         {
-            FilteredLogRecords = CollectionViewSource.GetDefaultView(logRecords);
+            FilteredLogRecords = filteredRecords;
             FilterOptions = filter;
             _filterCommand = new RelayCommand((p) => { RunFilter(p); }, (p) => CanFilter(p));
+            _filterInTabCommand = new RelayCommand((p) => { RunFilterInTab(p); }, (p) => CanFilter(p));
         }
 
         #region FilterMenu
@@ -93,6 +97,27 @@ namespace LazyLog.ViewModel
                 _filterOptions.Add(option);
                 FilterOptions = _filterOptions;
             }            
+        }
+
+        private void RunFilterInTab(object p)
+        {
+            FilterOption option = p as FilterOption;
+            IList<FilterOption> currentOptions = new List<FilterOption>(_filterOptions);
+
+            if (!currentOptions.Contains(option))
+            {
+                currentOptions.Add(option);                
+            }
+
+            FireNewTabRequestEvent(currentOptions);
+        }
+
+        private void FireNewTabRequestEvent(IList<FilterOption> currentOptions)
+        {
+            if (OnNewTabRequest != null)
+            {
+                OnNewTabRequest(currentOptions);
+            }
         }
 
         public IList<FilterOption> MenuFilterOptions
