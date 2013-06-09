@@ -36,9 +36,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Linq.Dynamic">
-      <HintPath>..\ExternalBinaries\System.Linq.Dynamic.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -62,6 +59,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Framework\PredicatesExtensions.cs" />
     <Compile Include="Framework\SafeObservableCollection.cs" />
     <Compile Include="LogProviders\CsvLogParser.cs" />
     <Compile Include="LogProviders\FileLogProvider.cs" />

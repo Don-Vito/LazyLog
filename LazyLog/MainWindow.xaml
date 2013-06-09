@@ -59,14 +59,6 @@
                             <Style TargetType="{x:Type xcdg:RowSelectorPane}">
                                 <Setter Property="Visibility" Value="Collapsed"/>
                             </Style>
-                            <!--ContextMenu x:Key="CellContextMenu" StaysOpen="True" 
-                                         ItemsSource="{Binding Source={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}, Path=FilterOptions}" />
-                            <Style TargetType="{x:Type xcdg:DataCell}">
-                                <Setter Property="ContextMenu" Value="{Binding Source={StaticResource CellContextMenu} }" />                                            
-                            </Style-->
-                            <!--Style TargetType="{x:Type xcdg:DataCell}">
-                                <EventSetter Event="ContextMenuOpening" Handler="OnDataGridContextMenuOpening" />
-                             </Style-->                           
                         </Grid.Resources>
                         <xcdg:DataGridControl x:Name="_dataGrid" MaxHeight="600" ItemsSource="{Binding FilteredLogRecords}"                                               
                                               SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
@@ -75,7 +67,7 @@
                                               >
                             <xcdg:DataGridControl.ContextMenu>
                                 <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}" >                                  
-                                    <MenuItem Header="Apply Filter" Command="{Binding DataContext.FilterCommand}" ItemsSource="{Binding DataContext.FilterOptions}">
+                                    <MenuItem Header="Apply Filter" Command="{Binding DataContext.FilterCommand}" ItemsSource="{Binding DataContext.MenuFilterOptions}">
                                         <MenuItem.ItemContainerStyle>
                                             <Style TargetType="MenuItem">
                                                 <Setter Property="Header" Value="{Binding Description}" />

@@ -1,11 +1,11 @@
-﻿using LazyLog.LogProviders;
+﻿using LazyLog.Framework;
+using LazyLog.LogProviders;
 using LazyLog.ViewModel.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Linq.Dynamic;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,29 +24,26 @@ namespace LazyLog.ViewModel
 
         #region Title
         
-        private IList<string> _filter;
-        public IList<string> Filter
+        private IList<FilterOption> _filterOptions;
+        public IList<FilterOption> FilterOptions
         {
             get
             {
-                return _filter;
+                return _filterOptions;
             }
 
             private set
             {
-                _filter = value;
+                _filterOptions = value;
 
-                if (_filter.Count == 0)
+                if (_filterOptions.Count == 0)
                 {
                     FilteredLogRecords.Filter = (item) => true;
                 }
                 else
                 {
-                    ParameterExpression p = Expression.Parameter(typeof(LogRecord), "LogRecord");
-                    LambdaExpression e = System.Linq.Dynamic.DynamicExpression.ParseLambda<LogRecord, bool>(GetLambdaString(), new[] { p });
-                    Delegate predicate = e.Compile();
-
-                    FilteredLogRecords.Filter = (item) => (bool)predicate.DynamicInvoke(item);
+                   IEnumerable<Predicate<LogRecord>> predicates = _filterOptions.Select(option => option.Predicate);
+                   FilteredLogRecords.Filter = (item) => PredicatesExtensions.And<LogRecord>(predicates)(item as LogRecord);
                 }
 
                 RaisePropertyChanged("Filter");
@@ -59,25 +56,25 @@ namespace LazyLog.ViewModel
         {
             get
             {
-                if (_filter.Count == 0)
+                if (_filterOptions.Count == 0)
                 {
                     return "Unfiltered";
                 }
-                return GetLambdaString();
+                return String.Join(" AND ", _filterOptions.Select(option => option.Description));
             }
         }
 
         #endregion
 
 
-        public LogViewModel(ObservableCollection<LogRecord> logRecords) : this(logRecords, new List<string>())
+        public LogViewModel(ObservableCollection<LogRecord> logRecords) : this(logRecords, new List<FilterOption>())
         {                       
         }
 
-        public LogViewModel(ObservableCollection<LogRecord> logRecords, IList<string> filter)          
+        public LogViewModel(ObservableCollection<LogRecord> logRecords, IList<FilterOption> filter)          
         {
             FilteredLogRecords = CollectionViewSource.GetDefaultView(logRecords);
-            Filter = filter;
+            FilterOptions = filter;
             _filterCommand = new RelayCommand((p) => { RunFilter(p); }, (p) => CanFilter(p));
         }
 
@@ -91,14 +88,14 @@ namespace LazyLog.ViewModel
         {
             FilterOption option = p as FilterOption;
 
-            if (!_filter.Contains(option.Description))
+            if (!_filterOptions.Contains(option))
             {
-                _filter.Add(option.Description);
-                Filter = _filter;
+                _filterOptions.Add(option);
+                FilterOptions = _filterOptions;
             }            
         }
 
-        public IList<FilterOption> FilterOptions
+        public IList<FilterOption> MenuFilterOptions
         {            
             get
             {
@@ -110,18 +107,16 @@ namespace LazyLog.ViewModel
 
                 return new FilterOption[] 
                 { 
-                    new FilterOption(String.Format("ThreadId==\"{0}\"",  currentRecord.ThreadId)),
-                    new FilterOption(String.Format("ProcessId==\"{0}\"",  currentRecord.ProcessId)),
-                    new FilterOption(String.Format("ModuleName==\"{0}\"",  currentRecord.ModuleName)),
+                    new FilterOption(String.Format("ThreadId is {0}",  currentRecord.ThreadId), (record) => (record.ThreadId == currentRecord.ThreadId)),
+                    new FilterOption(String.Format("ProcessId is {0}",  currentRecord.ProcessId), (record) => (record.ProcessId == currentRecord.ProcessId)),
+                    new FilterOption(String.Format("ModuleName is {0}",  currentRecord.ModuleName), (record) => (record.ModuleName == currentRecord.ModuleName)),
+                    new FilterOption(String.Format("ThreadId is not {0}",  currentRecord.ThreadId), (record) => (record.ThreadId != currentRecord.ThreadId)),
+                    new FilterOption(String.Format("ProcessId is not {0}",  currentRecord.ProcessId), (record) => (record.ProcessId != currentRecord.ProcessId)),
+                    new FilterOption(String.Format("ModuleName is not {0}",  currentRecord.ModuleName), (record) => (record.ModuleName != currentRecord.ModuleName)),
                 };
             }
         }     
 
-        #endregion
-
-        private string GetLambdaString()
-        {
-            return String.Join(" AND ", _filter);
-        }
+        #endregion     
     }
 }
