@@ -33,11 +33,19 @@ namespace LazyLog.LogProviders
 
         public void Start()
         {
-            _timer = new Timer(PollingTask, null, 0, Timeout.Infinite);
+            if (!IsRunning)
+            {
+                _timer = new Timer(PollingTask, null, 0, Timeout.Infinite);    
+            }
         }
 
         public void Stop()
         {
+            if (!IsRunning)
+            {
+                return;
+            }
+
             if (_timer != null)
             {
                 _timer.Dispose();
@@ -78,19 +86,41 @@ namespace LazyLog.LogProviders
             {
                 throw new LogProviderException();
             }
-            
-            using (FileStream fs = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                fs.Position = _offset;                
-              
-                using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
+
+            try
+            {            
+                using (FileStream fs = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    string newData = reader.ReadToEnd();
-                    _offset = fs.Position;
-                    return newData;
+                    if (fs.Length < _offset)
+	                {
+                        // The records were removed from file
+                        // TODO: we need to decide how to handle this case
+                        throw new LogProviderException();
+	                }  
+                    
+                    fs.Position = _offset;                
+              
+                    using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
+                    {
+                        string newData = reader.ReadToEnd();
+                        _offset = fs.Position;
+                        return newData;
+                    }                
                 }
-                
-            }                   
+            }
+            catch (System.IO.IOException)
+            {
+                // If the file is inaccessible we'll try later
+                return null;
+            }
+        }
+
+        public bool IsRunning
+        {
+            get 
+            {
+                return _timer != null;
+            }
         }
     }
 }

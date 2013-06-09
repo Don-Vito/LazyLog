@@ -39,7 +39,13 @@ namespace LazyLog.ViewModel
 
         private RelayCommand _openRecentFileCommand = null;
         public ICommand OpenRecentFileCommand { get { return _openRecentFileCommand; } }
-        
+
+        private RelayCommand _pauseMonitoringCommand = null;
+        public ICommand PauseMonitoringCommand { get { return _pauseMonitoringCommand; } }
+
+        private RelayCommand _resumeMonitoringCommand = null;
+        public ICommand ResumeMonitoringCommand { get { return _resumeMonitoringCommand; } }
+
         #endregion // Commands Properties 
 
 
@@ -103,6 +109,10 @@ namespace LazyLog.ViewModel
             _closeFileCommand = new RelayCommand((p) => OnCloseFile(p));
             _openLogWindowCommand = new RelayCommand((p) => OnOpenLogWindow(p), (p) => CanOpenLogWindow(p));
             _openRecentFileCommand = new RelayCommand((p) => OnOpenRecentFile(p), (p) => CanOpenRecentFile(p));
+            _pauseMonitoringCommand = new RelayCommand((p) => OnPauseMonitor(p), (p) => CanPauseMonitor(p));
+            _resumeMonitoringCommand = new RelayCommand((p) => OnResumeMonitor(p), (p) => CanResumeMonitor(p));
+             
+        
             _logParser = new CsvLogParser();
             _mruManager = new MruManager(_recentFiles, MAX_MRU_SIZE);
 
@@ -147,6 +157,27 @@ namespace LazyLog.ViewModel
         private bool CanOpenRecentFile(object parameter)
         {
             return _recentFiles.Count > 0;
+        }
+
+
+        private void OnPauseMonitor(object parameter)
+        {
+            _logProvider.Stop();
+        }
+
+        private bool CanPauseMonitor(object parameter)
+        {
+            return (_logProvider != null && _logProvider.IsRunning);
+        }
+
+        private void OnResumeMonitor(object parameter)
+        {
+            _logProvider.Start();
+        }
+
+        private bool CanResumeMonitor(object parameter)
+        {
+            return (_logProvider != null && !_logProvider.IsRunning);
         }
 
         #endregion

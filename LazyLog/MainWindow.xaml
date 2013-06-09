@@ -11,7 +11,9 @@
     <Window.InputBindings>
         <KeyBinding Command="{Binding Path=OpenFileCommand}" Key="O" Modifiers="Control"></KeyBinding>
         <KeyBinding Command="{Binding Path=CloseFileCommand}" Key="C" Modifiers="Control"></KeyBinding>
-        <KeyBinding Command="{Binding Path=OpenLogWindowCommand}" Key="N" Modifiers="Control"></KeyBinding>        
+        <KeyBinding Command="{Binding Path=OpenLogWindowCommand}" Key="N" Modifiers="Control"></KeyBinding>
+        <KeyBinding Command="{Binding Path=PauseMonitoringCommand}" Key="P" Modifiers="Control"></KeyBinding>
+        <KeyBinding Command="{Binding Path=ResumeMonitoringCommand}" Key="R" Modifiers="Control"></KeyBinding>
     </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -31,6 +33,10 @@
                         </Style>
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Actions">
+                <MenuItem Header="Pause" Command="{Binding PauseMonitoringCommand}" InputGestureText="Ctrl+P" />
+                <MenuItem Header="Resume" Command="{Binding ResumeMonitoringCommand}" InputGestureText="Ctrl+R" />
             </MenuItem>
             <MenuItem Header="_New Window" Command="{Binding OpenLogWindowCommand}" InputGestureText="Ctrl+N" />
         </Menu>

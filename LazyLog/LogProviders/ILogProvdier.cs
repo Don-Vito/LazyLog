@@ -17,5 +17,7 @@ namespace LazyLog.LogProviders
         void Start();
 
         void Stop();
+
+        bool IsRunning { get; }
     }
 }
