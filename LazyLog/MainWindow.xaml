@@ -65,7 +65,16 @@
                             </Style>
                             <Style TargetType="{x:Type xcdg:RowSelectorPane}">
                                 <Setter Property="Visibility" Value="Collapsed"/>
-                            </Style>
+                            </Style>                            
+                            <local:LogRecordCellTemplateSelector x:Key="LogRecordCellTemplateSelector">
+                                <local:LogRecordCellTemplateSelector.SeverityImageTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <Image Source="{Binding Flag}" Stretch="UniformToFill" Width="100" Height="100" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </local:LogRecordCellTemplateSelector.SeverityImageTemplate>
+                            </local:LogRecordCellTemplateSelector>
                         </Grid.Resources>
                         <xcdg:DataGridControl x:Name="_dataGrid" MaxHeight="600" ItemsSource="{Binding FilteredLogRecords}"                                               
                                               SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
