@@ -27,27 +27,5 @@ namespace LazyLog
             InitializeComponent();
             DataContext = new MainWindowViewModel();
         }
-
-        /*
-        private void OnDataGridContextMenuOpening(object sender, ContextMenuEventArgs e)
-        {
-            FrameworkElement fe = e.Source as FrameworkElement;
-            LogViewModel logViewModel = fe.DataContext as LogViewModel;
-            if (logViewModel.SelectedItem == null)
-            {
-                e.Handled = true;
-                return;
-            }
-            IList<string> menuHeaders = logViewModel.GetMenuHeaders();            
-            ContextMenu cm = new ContextMenu();
-            foreach (string menuHeader in menuHeaders)
-            {
-                cm.Items.Add(new MenuItem() { Header = menuHeader });
-            }
-            
-            fe.ContextMenu = cm;                        
-        }
-         */
-
     }
 }

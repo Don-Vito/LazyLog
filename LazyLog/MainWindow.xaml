@@ -78,6 +78,7 @@
                                     <MenuItem Header="Apply Filter" Command="{Binding DataContext.FilterCommand}" ItemsSource="{Binding DataContext.FilterOptions}">
                                         <MenuItem.ItemContainerStyle>
                                             <Style TargetType="MenuItem">
+                                                <Setter Property="Header" Value="{Binding Description}" />
                                                 <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}, Path=DataContext.DataContext.FilterCommand}" />
                                                 <Setter Property="CommandParameter" Value="{Binding}" />
                                             </Style>
@@ -85,6 +86,9 @@
                                     </MenuItem>                                  
                                 </ContextMenu>
                             </xcdg:DataGridControl.ContextMenu>
+                            <xcdg:DataGridControl.View>
+                                <xcdg:TableView ColumnStretchMode="All"/>
+                            </xcdg:DataGridControl.View>
                         </xcdg:DataGridControl>
                     </Grid>                    
                 </DataTemplate>

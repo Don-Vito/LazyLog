@@ -42,7 +42,10 @@ namespace LazyLog.ViewModel
                 }
                 else
                 {
-                    Delegate predicate = CreateNotTrivialFilter();
+                    ParameterExpression p = Expression.Parameter(typeof(LogRecord), "LogRecord");
+                    LambdaExpression e = System.Linq.Dynamic.DynamicExpression.ParseLambda<LogRecord, bool>(GetLambdaString(), new[] { p });
+                    Delegate predicate = e.Compile();
+
                     FilteredLogRecords.Filter = (item) => (bool)predicate.DynamicInvoke(item);
                 }
 
@@ -86,11 +89,16 @@ namespace LazyLog.ViewModel
 
         private void RunFilter(object p)
         {
-            _filter.Add(p as string);
-            Filter = _filter;
+            FilterOption option = p as FilterOption;
+
+            if (!_filter.Contains(option.Description))
+            {
+                _filter.Add(option.Description);
+                Filter = _filter;
+            }            
         }
 
-        public IList<string> FilterOptions
+        public IList<FilterOption> FilterOptions
         {            
             get
             {
@@ -100,11 +108,11 @@ namespace LazyLog.ViewModel
                     return null;
                 }
 
-                return new string[] 
+                return new FilterOption[] 
                 { 
-                    String.Format("ThreadId==\"{0}\"",  currentRecord.ThreadId),
-                    String.Format("ProcessId==\"{0}\"",  currentRecord.ProcessId),
-                    String.Format("ModuleName==\"{0}\"",  currentRecord.ModuleName),
+                    new FilterOption(String.Format("ThreadId==\"{0}\"",  currentRecord.ThreadId)),
+                    new FilterOption(String.Format("ProcessId==\"{0}\"",  currentRecord.ProcessId)),
+                    new FilterOption(String.Format("ModuleName==\"{0}\"",  currentRecord.ModuleName)),
                 };
             }
         }     
@@ -115,13 +123,5 @@ namespace LazyLog.ViewModel
         {
             return String.Join(" AND ", _filter);
         }
-
-        private Delegate CreateNotTrivialFilter()
-        {
-            ParameterExpression p = Expression.Parameter(typeof(LogRecord), "LogRecord");
-            LambdaExpression e = System.Linq.Dynamic.DynamicExpression.ParseLambda<LogRecord, bool>(GetLambdaString(), new[] { p });
-            Delegate predicate = e.Compile();
-            return predicate;
-        }       
     }
 }

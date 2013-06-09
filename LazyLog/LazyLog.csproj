@@ -70,6 +70,7 @@
     <Compile Include="LogProviders\LogProviderException.cs" />
     <Compile Include="ViewModel\Command\RelayCommand.cs" />
     <Compile Include="LogProviders\LogRecord.cs" />
+    <Compile Include="ViewModel\FilterOption.cs" />
     <Compile Include="ViewModel\LogViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="LogProviders\Severity.cs" />
