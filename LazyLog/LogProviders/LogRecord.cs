@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace LazyLog.LogProviders
 {
     public class LogRecord
     {
-        private static int currentID = 0;
+        private static int _currentId;
 
-        public int ID { get; private set; }
+        public int Id { get; private set; }
         public DateTime TimeStamp { get; private set; }
         public Severity Severity { get; private set; }
         public string ModuleName { get; private set; }
@@ -19,12 +16,12 @@ namespace LazyLog.LogProviders
 
         public static LogRecord Create(DateTime timeStamp, Severity severity, string moduleName, string message, string processId, string threadId)
         {
-            return new LogRecord(currentID++, timeStamp, severity, moduleName, message, processId, threadId);
+            return new LogRecord(_currentId++, timeStamp, severity, moduleName, message, processId, threadId);
         }
 
         private LogRecord(int id, DateTime timeStamp, Severity severity, string moduleName, string message, string processId, string threadId)
         {
-            ID = id;
+            Id = id;
             TimeStamp = timeStamp;
             Severity = severity;
             ModuleName = moduleName;

@@ -1,20 +1,14 @@
-﻿using LazyLog.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Threading;
 
 
 namespace LazyLog.LogProviders
 {
     public class FileLogProvider : ILogProvdier
     {   
-        private string _filePath;
+        private readonly string _filePath;
         private long _offset;      
         private Timer _timer;
 
@@ -89,7 +83,7 @@ namespace LazyLog.LogProviders
 
             try
             {            
-                using (FileStream fs = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var fs = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     if (fs.Length < _offset)
 	                {
@@ -100,7 +94,7 @@ namespace LazyLog.LogProviders
                     
                     fs.Position = _offset;                
               
-                    using (StreamReader reader = new StreamReader(fs, Encoding.UTF8))
+                    using (var reader = new StreamReader(fs, Encoding.UTF8))
                     {
                         string newData = reader.ReadToEnd();
                         _offset = fs.Position;
@@ -108,7 +102,7 @@ namespace LazyLog.LogProviders
                     }                
                 }
             }
-            catch (System.IO.IOException)
+            catch (IOException)
             {
                 // If the file is inaccessible we'll try later
                 return null;

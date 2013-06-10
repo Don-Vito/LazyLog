@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LazyLog.LogProviders
 {
@@ -11,7 +9,7 @@ namespace LazyLog.LogProviders
         public IEnumerable<LogRecord> Parse(string data)
         {
             IEnumerable<string> lines = data.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-            return lines.Select(line => ParseLine(line));
+            return lines.Select(ParseLine);
         }
 
         private static LogRecord ParseLine(string line)

@@ -6,6 +6,8 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
         Title="{Binding Title}" Height="600" Width="800">
         
     <Window.InputBindings>
@@ -41,7 +43,7 @@
             <MenuItem Header="_New Window" Command="{Binding OpenLogWindowCommand}" InputGestureText="Ctrl+N" />
         </Menu>
         <xcad:DockingManager 
-            x:Name="dockingManager" 
+            x:Name="DockingManager" 
             DocumentsSource="{Binding Logs}"
             Grid.Row="1">            
 
@@ -74,7 +76,8 @@
                                               >
                             <xcdg:DataGridControl.ContextMenu>
                                 <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}" >                                  
-                                    <MenuItem Header="Apply Filter" Command="{Binding DataContext.FilterCommand}" ItemsSource="{Binding DataContext.MenuFilterOptions}">
+                                    <MenuItem Header="Apply Filter" Command="{Binding DataContext.FilterCommand}" ItemsSource="{Binding DataContext.MenuFilterOptions}"
+                                              d:DataContext="{d:DesignInstance xcdg:DataGridControl}">
                                         <MenuItem.ItemContainerStyle>
                                             <Style TargetType="MenuItem">
                                                 <Setter Property="Header" Value="{Binding Description}" />
@@ -83,7 +86,8 @@
                                             </Style>
                                         </MenuItem.ItemContainerStyle>
                                     </MenuItem>
-                                    <MenuItem Header="Apply Filter in Tab" Command="{Binding DataContext.FilterInTabCommand}" ItemsSource="{Binding DataContext.MenuFilterOptions}">
+                                    <MenuItem Header="Apply Filter in Tab" Command="{Binding DataContext.FilterInTabCommand}" ItemsSource="{Binding DataContext.MenuFilterOptions}"
+                                              d:DataContext="{d:DesignInstance xcdg:DataGridControl}">
                                         <MenuItem.ItemContainerStyle>
                                             <Style TargetType="MenuItem">
                                                 <Setter Property="Header" Value="{Binding Description}" />
@@ -92,7 +96,8 @@
                                             </Style>
                                         </MenuItem.ItemContainerStyle>
                                     </MenuItem>
-                                    <MenuItem Header="Clear Filters" Command="{Binding DataContext.ClearFiltersCommand}" ItemsSource="{Binding DataContext.FilterOptions}">
+                                    <MenuItem Header="Clear Filters" Command="{Binding DataContext.ClearFiltersCommand}" ItemsSource="{Binding DataContext.FilterOptions}"
+                                              d:DataContext="{d:DesignInstance xcdg:DataGridControl}">
                                         <MenuItem.ItemContainerStyle>
                                             <Style TargetType="MenuItem">
                                                 <Setter Property="Header" Value="{Binding Description}" />

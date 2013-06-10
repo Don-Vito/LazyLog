@@ -1,16 +1,13 @@
 ﻿using LazyLog.Framework;
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace LazyLog.ViewModel
 {
     class MruManager
     {
-        private Framework.SafeObservableCollection<string> _recentFiles;
+        private readonly SafeObservableCollection<string> _recentFiles;
         private readonly int _maxSize;
 
         public MruManager(SafeObservableCollection<string> recentFiles, int maxSize)

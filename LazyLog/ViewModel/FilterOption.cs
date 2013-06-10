@@ -1,8 +1,6 @@
-﻿using LazyLog.LogProviders;
+﻿using System.Diagnostics;
+using LazyLog.LogProviders;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace LazyLog.ViewModel
 {
@@ -25,7 +23,8 @@ namespace LazyLog.ViewModel
                 return false;
             }
 
-            FilterOption other = obj as FilterOption;
+            var other = obj as FilterOption;
+            Debug.Assert(other != null, "other != null");
             return Description.Equals(other.Description);    
         }
 

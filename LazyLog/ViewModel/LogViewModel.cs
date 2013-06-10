@@ -3,13 +3,8 @@ using LazyLog.LogProviders;
 using LazyLog.ViewModel.Command;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace LazyLog.ViewModel
@@ -21,15 +16,15 @@ namespace LazyLog.ViewModel
         
         public event NewTabRequestHandler OnNewTabRequest;
         public ICollectionView FilteredLogRecords { get; private set;}
-        public object SelectedItem { get; private set; }
+        public object SelectedItem { get; set; }
 
-        private RelayCommand _filterCommand = null;
+        private readonly RelayCommand _filterCommand;
         public ICommand FilterCommand { get { return _filterCommand; } }
 
-        private RelayCommand _filterInTabCommand = null;
+        private readonly RelayCommand _filterInTabCommand;
         public ICommand FilterInTabCommand { get { return _filterInTabCommand; } }
 
-        private RelayCommand _clearFiltersCommand = null;
+        private readonly RelayCommand _clearFiltersCommand;
         public ICommand ClearFiltersCommand { get { return _clearFiltersCommand; } }
 
         #region Title
@@ -48,12 +43,12 @@ namespace LazyLog.ViewModel
 
                 if (_filterOptions.Count == 0)
                 {
-                    FilteredLogRecords.Filter = (item) => true;
+                    FilteredLogRecords.Filter = item => true;
                 }
                 else
                 {
                    IEnumerable<Predicate<LogRecord>> predicates = _filterOptions.Select(option => option.Predicate);
-                   FilteredLogRecords.Filter = (item) => PredicatesExtensions.And<LogRecord>(predicates)(item as LogRecord);
+                   FilteredLogRecords.Filter = item => PredicatesExtensions.And(predicates)(item as LogRecord);
                 }
 
                 RaisePropertyChanged("Filter");
@@ -81,9 +76,9 @@ namespace LazyLog.ViewModel
         {
             FilteredLogRecords = filteredRecords;
             FilterOptions = filter;
-            _filterCommand = new RelayCommand((p) => { RunFilter(p); }, (p) => CanFilter(p));
-            _filterInTabCommand = new RelayCommand((p) => { RunFilterInTab(p); }, (p) => CanFilter(p));
-            _clearFiltersCommand = new RelayCommand((p) => { ClearFilters(p); }, (p) => CanClearFilters(p));
+            _filterCommand = new RelayCommand(RunFilter, CanFilter);
+            _filterInTabCommand = new RelayCommand(RunFilterInTab, CanFilter);
+            _clearFiltersCommand = new RelayCommand(ClearFilters, p => CanClearFilters());
         }
 
         #region FilterMenu
@@ -94,7 +89,7 @@ namespace LazyLog.ViewModel
 
         private void RunFilter(object p)
         {
-            FilterOption option = p as FilterOption;
+            var option = p as FilterOption;
 
             if (!_filterOptions.Contains(option))
             {
@@ -103,21 +98,21 @@ namespace LazyLog.ViewModel
             }            
         }
 
-        private bool CanClearFilters(object p)
+        private bool CanClearFilters()
         {
             return FilterOptions.Count > 0;
         }
 
         private void ClearFilters(object p)
         {
-            FilterOption option = p as FilterOption;
+            var option = p as FilterOption;
             _filterOptions.Remove(option);
             FilterOptions = _filterOptions;
         }
 
         private void RunFilterInTab(object p)
         {
-            FilterOption option = p as FilterOption;
+            var option = p as FilterOption;
             IList<FilterOption> currentOptions = new List<FilterOption>(_filterOptions);
 
             if (!currentOptions.Contains(option))
@@ -146,14 +141,14 @@ namespace LazyLog.ViewModel
                     return null;
                 }
 
-                return new FilterOption[] 
+                return new[] 
                 { 
-                    new FilterOption(String.Format("ThreadId is {0}",  currentRecord.ThreadId), (record) => (record.ThreadId == currentRecord.ThreadId)),
-                    new FilterOption(String.Format("ProcessId is {0}",  currentRecord.ProcessId), (record) => (record.ProcessId == currentRecord.ProcessId)),
-                    new FilterOption(String.Format("ModuleName is {0}",  currentRecord.ModuleName), (record) => (record.ModuleName == currentRecord.ModuleName)),
-                    new FilterOption(String.Format("ThreadId is not {0}",  currentRecord.ThreadId), (record) => (record.ThreadId != currentRecord.ThreadId)),
-                    new FilterOption(String.Format("ProcessId is not {0}",  currentRecord.ProcessId), (record) => (record.ProcessId != currentRecord.ProcessId)),
-                    new FilterOption(String.Format("ModuleName is not {0}",  currentRecord.ModuleName), (record) => (record.ModuleName != currentRecord.ModuleName)),
+                    new FilterOption(String.Format("ThreadId is {0}",  currentRecord.ThreadId), record => (record.ThreadId == currentRecord.ThreadId)),
+                    new FilterOption(String.Format("ProcessId is {0}",  currentRecord.ProcessId), record => (record.ProcessId == currentRecord.ProcessId)),
+                    new FilterOption(String.Format("ModuleName is {0}",  currentRecord.ModuleName), record => (record.ModuleName == currentRecord.ModuleName)),
+                    new FilterOption(String.Format("ThreadId is not {0}",  currentRecord.ThreadId), record => (record.ThreadId != currentRecord.ThreadId)),
+                    new FilterOption(String.Format("ProcessId is not {0}",  currentRecord.ProcessId), record => (record.ProcessId != currentRecord.ProcessId)),
+                    new FilterOption(String.Format("ModuleName is not {0}",  currentRecord.ModuleName), record => (record.ModuleName != currentRecord.ModuleName))
                 };
             }
         }             
