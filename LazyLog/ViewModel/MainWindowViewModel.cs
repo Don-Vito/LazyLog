@@ -42,6 +42,9 @@ namespace LazyLog.ViewModel
         private readonly RelayCommand _resumeMonitoringCommand;
         public ICommand ResumeMonitoringCommand { get { return _resumeMonitoringCommand; } }
 
+        private readonly RelayCommand _clearLogCommand;
+        public ICommand ClearLogCommand { get { return _clearLogCommand; } }
+
         #endregion // Commands Properties 
 
 
@@ -107,14 +110,14 @@ namespace LazyLog.ViewModel
             _openRecentFileCommand = new RelayCommand(OnOpenRecentFile, p => CanOpenRecentFile());
             _pauseMonitoringCommand = new RelayCommand(p => OnPauseMonitor(), p => CanPauseMonitor());
             _resumeMonitoringCommand = new RelayCommand(p => OnResumeMonitor(), p => CanResumeMonitor());
+            _clearLogCommand = new RelayCommand(p => ClearLog(), p => CanClearLog());
              
         
             _logParser = new CsvLogParser();
             _mruManager = new MruManager(_recentFiles, MAX_MRU_SIZE);
 
             Title = "LazyLog";            
-        }
-
+        }        
 
         #region Commands Actions
 
@@ -174,6 +177,16 @@ namespace LazyLog.ViewModel
         private bool CanResumeMonitor()
         {
             return (_logProvider != null && !_logProvider.IsRunning);
+        }
+
+        private void ClearLog()
+        {
+            _logRecords.Clear();
+        }
+
+        private bool CanClearLog()
+        {
+            return (_logProvider != null);
         }
 
         #endregion

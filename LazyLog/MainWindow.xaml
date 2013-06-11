@@ -12,10 +12,11 @@
         
     <Window.InputBindings>
         <KeyBinding Command="{Binding Path=OpenFileCommand}" Key="O" Modifiers="Control"></KeyBinding>
-        <KeyBinding Command="{Binding Path=CloseFileCommand}" Key="C" Modifiers="Control"></KeyBinding>
+        <KeyBinding Command="{Binding Path=CloseFileCommand}" Key="X" Modifiers="Control"></KeyBinding>
         <KeyBinding Command="{Binding Path=OpenLogWindowCommand}" Key="N" Modifiers="Control"></KeyBinding>
         <KeyBinding Command="{Binding Path=PauseMonitoringCommand}" Key="P" Modifiers="Control"></KeyBinding>
         <KeyBinding Command="{Binding Path=ResumeMonitoringCommand}" Key="R" Modifiers="Control"></KeyBinding>
+        <KeyBinding Command="{Binding Path=ClearLogCommand}" Key="C" Modifiers="Control"></KeyBinding>
     </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -25,7 +26,7 @@
         <Menu Name="Menu" Grid.Row="0">           
             <MenuItem Header="_File">
                 <MenuItem Header="Open" Command="{Binding OpenFileCommand}" InputGestureText="Ctrl+O" />
-                <MenuItem Header="Close" Command="{Binding CloseFileCommand}" InputGestureText="Ctrl+C" />
+                <MenuItem Header="Close" Command="{Binding CloseFileCommand}" InputGestureText="Ctrl+X" />
                 <Separator />
                 <MenuItem Header="Recent Files" Command="{Binding OpenRecentFileCommand}" ItemsSource="{Binding RecentFiles}">
                     <MenuItem.ItemContainerStyle>
@@ -39,26 +40,26 @@
             <MenuItem Header="_Actions">
                 <MenuItem Header="Pause" Command="{Binding PauseMonitoringCommand}" InputGestureText="Ctrl+P" />
                 <MenuItem Header="Resume" Command="{Binding ResumeMonitoringCommand}" InputGestureText="Ctrl+R" />
+                <MenuItem Header="Clear" Command="{Binding ClearLogCommand}" InputGestureText="Ctrl+C" />
             </MenuItem>
             <MenuItem Header="_New Window" Command="{Binding OpenLogWindowCommand}" InputGestureText="Ctrl+N" />
         </Menu>
         <xcad:DockingManager 
             x:Name="DockingManager" 
             DocumentsSource="{Binding Logs}"
-            Grid.Row="1">            
-
+            Grid.Row="1" 
+            d:DataContext="{d:DesignInstance model:MainWindowViewModel}">            
             <xcad:DockingManager.DocumentHeaderTemplate>                
-                <DataTemplate DataType="{x:Type model:LogViewModel}">
+                <DataTemplate DataType="{x:Type xcad:LayoutDocument}">
                     <TextBlock Text="{Binding Content.LogViewTitle}" />
                 </DataTemplate>
             </xcad:DockingManager.DocumentHeaderTemplate>
             <xcad:DockingManager.DocumentTitleTemplate>
-                <DataTemplate DataType="{x:Type model:LogViewModel}">
+                <DataTemplate DataType="{x:Type xcad:LayoutDocument}">
                     <TextBlock Text="{Binding Content.LogViewTitle}" />
                 </DataTemplate>
             </xcad:DockingManager.DocumentTitleTemplate>
-
-            <xcad:DockingManager.LayoutItemTemplate>                
+            <xcad:DockingManager.LayoutItemTemplate>
                 <DataTemplate DataType="{x:Type model:LogViewModel}" >    
                     <Grid>
                         <Grid.Resources>
@@ -67,17 +68,20 @@
                             </Style>
                             <Style TargetType="{x:Type xcdg:RowSelectorPane}">
                                 <Setter Property="Visibility" Value="Collapsed"/>
-                            </Style>
+                            </Style>                            
                         </Grid.Resources>
-                        <xcdg:DataGridControl x:Name="_dataGrid" MaxHeight="600" ItemsSource="{Binding FilteredLogRecords}"                                               
+                        <xcdg:DataGridControl x:Name="_dataGrid"                                               
+                                              MaxHeight="600" ItemsSource="{Binding FilteredLogRecords}"                                               
                                               SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                               NavigationBehavior="RowOnly"                                        
-                                              ReadOnly="True"                                             
-                                              >
+                                              ReadOnly="True" >
                             <xcdg:DataGridControl.ContextMenu>
-                                <ContextMenu DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}" >                                  
-                                    <MenuItem Header="Apply Filter" Command="{Binding DataContext.FilterCommand}" ItemsSource="{Binding DataContext.MenuFilterOptions}"
-                                              d:DataContext="{d:DesignInstance xcdg:DataGridControl}">
+                                <ContextMenu DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}" >
+                                    <MenuItem Header="Apply Filter" 
+                                              d:DataContext="{d:DesignInstance xcdg:DataGridControl}"
+                                              Command="{Binding DataContext.FilterCommand}" 
+                                              ItemsSource="{Binding DataContext.MenuFilterOptions}"                                              
+                                              >
                                         <MenuItem.ItemContainerStyle>
                                             <Style TargetType="MenuItem">
                                                 <Setter Property="Header" Value="{Binding Description}" />
@@ -86,8 +90,11 @@
                                             </Style>
                                         </MenuItem.ItemContainerStyle>
                                     </MenuItem>
-                                    <MenuItem Header="Apply Filter in Tab" Command="{Binding DataContext.FilterInTabCommand}" ItemsSource="{Binding DataContext.MenuFilterOptions}"
-                                              d:DataContext="{d:DesignInstance xcdg:DataGridControl}">
+                                    <MenuItem Header="Apply Filter in Tab"
+                                              d:DataContext="{d:DesignInstance xcdg:DataGridControl}"
+                                              Command="{Binding DataContext.FilterInTabCommand}" 
+                                              ItemsSource="{Binding DataContext.MenuFilterOptions}"
+                                              >
                                         <MenuItem.ItemContainerStyle>
                                             <Style TargetType="MenuItem">
                                                 <Setter Property="Header" Value="{Binding Description}" />
@@ -96,8 +103,11 @@
                                             </Style>
                                         </MenuItem.ItemContainerStyle>
                                     </MenuItem>
-                                    <MenuItem Header="Clear Filters" Command="{Binding DataContext.ClearFiltersCommand}" ItemsSource="{Binding DataContext.FilterOptions}"
-                                              d:DataContext="{d:DesignInstance xcdg:DataGridControl}">
+                                    <MenuItem Header="Clear Filters" 
+                                              d:DataContext="{d:DesignInstance xcdg:DataGridControl}"
+                                              Command="{Binding DataContext.ClearFiltersCommand}" 
+                                              ItemsSource="{Binding DataContext.FilterOptions}"
+                                              >
                                         <MenuItem.ItemContainerStyle>
                                             <Style TargetType="MenuItem">
                                                 <Setter Property="Header" Value="{Binding Description}" />
@@ -114,11 +124,10 @@
                         </xcdg:DataGridControl>
                     </Grid>                    
                 </DataTemplate>
-            </xcad:DockingManager.LayoutItemTemplate>
-            
-            <xcad:LayoutRoot>
+            </xcad:DockingManager.LayoutItemTemplate>             
+            <xcad:LayoutRoot>                
                 <xcad:LayoutPanel Orientation="Vertical">
-                    <xcad:LayoutDocumentPane/>
+                    <xcad:LayoutDocumentPane />
                     <xcad:LayoutAnchorablePane Name="LogsPane" />                                        
                 </xcad:LayoutPanel>
             </xcad:LayoutRoot>
