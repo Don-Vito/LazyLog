@@ -60,13 +60,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Framework\PredicatesExtensions.cs" />
+    <Compile Include="Framework\RelayCommand.cs" />
     <Compile Include="Framework\SafeObservableCollection.cs" />
     <Compile Include="LogProviders\CsvLogParser.cs" />
     <Compile Include="LogProviders\FileLogProvider.cs" />
     <Compile Include="LogProviders\ILogProvdier.cs" />
     <Compile Include="LogProviders\ILogParser.cs" />
     <Compile Include="LogProviders\LogProviderException.cs" />
-    <Compile Include="ViewModel\Command\RelayCommand.cs" />
     <Compile Include="LogProviders\LogRecord.cs" />
     <Compile Include="ViewModel\FilterOption.cs" />
     <Compile Include="ViewModel\ICollectionViewCreator.cs" />
@@ -115,6 +115,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

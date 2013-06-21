@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Threading;
 
@@ -55,7 +57,7 @@ namespace LazyLog.Framework
             DoDispatchedAction(() => base.SetItem(index, item));
         }
  
-        protected override void OnCollectionChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
             DoDispatchedAction(() => base.OnCollectionChanged(e));
         }
@@ -63,6 +65,20 @@ namespace LazyLog.Framework
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             DoDispatchedAction(() => base.OnPropertyChanged(e));
-        }       
+        } 
+      
+        public void AddRange(IEnumerable<T> items)
+        {
+            DoDispatchedAction(() => AddRangeInThread(items));            
+        }
+
+        private void AddRangeInThread(IEnumerable<T> items)
+        {
+            foreach (T item in items)
+            {
+                Items.Add(item);                
+            }
+            base.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
     }
 }

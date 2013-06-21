@@ -1,6 +1,5 @@
 ﻿using LazyLog.Framework;
 using LazyLog.LogProviders;
-using LazyLog.ViewModel.Command;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

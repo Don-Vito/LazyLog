@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Windows.Input;
 
-namespace LazyLog.ViewModel.Command
+namespace LazyLog.Framework
 {
     class RelayCommand : ICommand
     {
