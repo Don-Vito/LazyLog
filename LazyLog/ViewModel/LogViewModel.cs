@@ -1,4 +1,5 @@
-﻿using LazyLog.Framework;
+﻿using System.Collections.Specialized;
+using LazyLog.Framework;
 using LazyLog.LogProviders;
 using System;
 using System.Collections.Generic;
@@ -12,19 +13,12 @@ namespace LazyLog.ViewModel
 
     class LogViewModel : ViewModelBase
     {
-        
         public event NewTabRequestHandler OnNewTabRequest;
-        public ICollectionView FilteredLogRecords { get; private set;}
-        public object SelectedItem { get; set; }
+        public ICollectionView FilteredLogRecords { get; private set;}     
 
-        private readonly RelayCommand _filterCommand;
-        public ICommand FilterCommand { get { return _filterCommand; } }
-
-        private readonly RelayCommand _filterInTabCommand;
-        public ICommand FilterInTabCommand { get { return _filterInTabCommand; } }
-
-        private readonly RelayCommand _clearFiltersCommand;
-        public ICommand ClearFiltersCommand { get { return _clearFiltersCommand; } }
+        public ICommand FilterCommand { get; private set; }        
+        public ICommand FilterInTabCommand { get; private set; }
+        public ICommand ClearFiltersCommand { get; private set; }
 
         #region Title
         
@@ -70,14 +64,76 @@ namespace LazyLog.ViewModel
 
         #endregion
 
+        #region SelectedItem
+
+        private object _selectedItem;
+        public object SelectedItem
+        {
+            get { return _selectedItem; }
+            set
+            {
+                if (_selectedItem != value)
+                {
+                    _selectedItem = value;
+                    RaisePropertyChanged("SelectedItem");
+                }
+            }
+        }
+        #endregion SelectedItem
+
+        #region AutoScroll
+
+        private Boolean _isAutoScroll;
+
+        public Boolean IsAutoScroll
+        {
+            get { return _isAutoScroll; }
+            set
+            {
+                if (_isAutoScroll != value)
+                {
+                    _isAutoScroll = value;
+                    UpdateAutoScrolling();
+                    RaisePropertyChanged("IsAutoScroll");
+                }
+            }
+        }
+
+        private void UpdateAutoScrolling()
+        {
+            if (IsAutoScroll)
+            {
+                FilteredLogRecords.CollectionChanged += AutoScroll;
+                ScrollDown();
+            }
+            else
+            {
+                FilteredLogRecords.CollectionChanged -= AutoScroll;
+            }
+        }
+
+        private void ScrollDown()
+        {
+            FilteredLogRecords.MoveCurrentToLast();           
+            SelectedItem = FilteredLogRecords.CurrentItem;
+        }
+
+        private void AutoScroll(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            ScrollDown();
+        }
+
+        #endregion AutoScroll
 
         public LogViewModel(ICollectionView filteredRecords, IList<FilterOption> filter)          
         {
             FilteredLogRecords = filteredRecords;
             FilterOptions = filter;
-            _filterCommand = new RelayCommand(RunFilter, CanFilter);
-            _filterInTabCommand = new RelayCommand(RunFilterInTab, CanFilter);
-            _clearFiltersCommand = new RelayCommand(ClearFilters, p => CanClearFilters());
+            FilterCommand = new RelayCommand(RunFilter, CanFilter);
+            FilterInTabCommand = new RelayCommand(RunFilterInTab, CanFilter);
+            ClearFiltersCommand = new RelayCommand(ClearFilters, p => FilterOptions.Count > 0);
+            
+            IsAutoScroll = true;
         }
 
         #region FilterMenu
@@ -95,11 +151,6 @@ namespace LazyLog.ViewModel
                 _filterOptions.Add(option);
                 FilterOptions = _filterOptions;
             }            
-        }
-
-        private bool CanClearFilters()
-        {
-            return FilterOptions.Count > 0;
         }
 
         private void ClearFilters(object p)

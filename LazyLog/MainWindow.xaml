@@ -40,6 +40,7 @@
             <MenuItem Header="_Actions">
                 <MenuItem Header="Pause" Command="{Binding PauseMonitoringCommand}" InputGestureText="Ctrl+P" />
                 <MenuItem Header="Resume" Command="{Binding ResumeMonitoringCommand}" InputGestureText="Ctrl+R" />
+                <Separator/>
                 <MenuItem Header="Clear" Command="{Binding ClearLogCommand}" InputGestureText="Ctrl+C" />
             </MenuItem>
             <MenuItem Header="_New Window" Command="{Binding OpenLogWindowCommand}" InputGestureText="Ctrl+N" />
@@ -117,6 +118,11 @@
                                             </Style>
                                         </MenuItem.ItemContainerStyle>
                                     </MenuItem>
+                                    <Separator/>
+                                    <MenuItem Header="Auto-Scroll" 
+                                              d:DataContext="{d:DesignInstance xcdg:DataGridControl}"
+                                              IsCheckable="True" 
+                                              IsChecked="{Binding DataContext.IsAutoScroll}"/>
                                 </ContextMenu>
                             </xcdg:DataGridControl.ContextMenu>
                             <xcdg:DataGridControl.View>
