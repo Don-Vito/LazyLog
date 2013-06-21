@@ -47,6 +47,7 @@
         <xcad:DockingManager 
             x:Name="DockingManager" 
             DocumentsSource="{Binding Logs}"
+            ActiveContent="{Binding ActiveDocument, Mode=TwoWay}"
             Grid.Row="1" 
             d:DataContext="{d:DesignInstance model:MainWindowViewModel}">            
             <xcad:DockingManager.DocumentHeaderTemplate>                

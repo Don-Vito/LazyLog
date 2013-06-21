@@ -87,6 +87,25 @@ namespace LazyLog.ViewModel
         
         #endregion
 
+        #region ActiveDocument
+
+        private LogViewModel _activeLog;
+
+        public LogViewModel ActiveDocument
+        {
+            get { return _activeLog; }
+            set
+            {
+                if (_activeLog != value)
+                {
+                    _activeLog = value;
+                    RaisePropertyChanged("ActiveDocument");
+                }
+            }
+        }
+
+        #endregion ActiveDocument
+
 
         public MainWindowViewModel(ICollectionViewCreator iCollectionViewCreator)
         {
@@ -180,6 +199,8 @@ namespace LazyLog.ViewModel
             logViewModel.OnNewTabRequest += OpenLogWindow;
             _logs.Add(logViewModel);            
             RaisePropertyChanged("Logs");
+
+            ActiveDocument = _logs.Last();
         }        
     }
 }
