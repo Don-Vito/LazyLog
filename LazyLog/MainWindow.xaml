@@ -75,6 +75,7 @@
                         <xcdg:DataGridControl x:Name="_dataGrid"                                               
                                               MaxHeight="600" ItemsSource="{Binding FilteredLogRecords}"                                               
                                               SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                              SynchronizeCurrent="True"
                                               NavigationBehavior="RowOnly"                                        
                                               ReadOnly="True" >
                             <xcdg:DataGridControl.ContextMenu>

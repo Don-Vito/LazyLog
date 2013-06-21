@@ -93,29 +93,24 @@ namespace LazyLog.ViewModel
                 if (_isAutoScroll != value)
                 {
                     _isAutoScroll = value;
-                    UpdateAutoScrolling();
+                    if (_isAutoScroll)
+                    {
+                        FilteredLogRecords.CollectionChanged += AutoScroll;
+                        ScrollDown();
+                    }
+                    else
+                    {
+                        FilteredLogRecords.CollectionChanged -= AutoScroll;
+                    }
+                    
                     RaisePropertyChanged("IsAutoScroll");
                 }
             }
         }
 
-        private void UpdateAutoScrolling()
-        {
-            if (IsAutoScroll)
-            {
-                FilteredLogRecords.CollectionChanged += AutoScroll;
-                ScrollDown();
-            }
-            else
-            {
-                FilteredLogRecords.CollectionChanged -= AutoScroll;
-            }
-        }
-
         private void ScrollDown()
         {
-            FilteredLogRecords.MoveCurrentToLast();           
-            SelectedItem = FilteredLogRecords.CurrentItem;
+            FilteredLogRecords.MoveCurrentToLast();                      
         }
 
         private void AutoScroll(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
